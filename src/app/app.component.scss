@@ -1,0 +1,44 @@
+:host {
+  display: block;
+  margin: 1rem;
+}
+
+.wrapper {
+  margin: 0 auto;
+  max-width: 75rem;
+}
+
+main {
+  margin-top: 1rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+.pokemon-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  justify-items: center;
+
+  li:before {
+    display: none;
+  }
+}
+
+.type-list {
+  display: flex;
+  flex-wrap: wrap;
+
+  li:before {
+    display: none;
+  }
+  li:not(:first-of-type) {
+    margin-left: .5rem;
+  }
+}
+
+.load-more {
+  text-align: center;
+  margin-top: 2rem;
+}
