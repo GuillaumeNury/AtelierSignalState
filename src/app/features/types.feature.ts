@@ -14,7 +14,8 @@ export function withTypesFeature() {
   return signalStoreFeature(
     {
       // selectedLang should be available in the state
-      state: type<{ selectedLang: string; page: number }>(),
+      state: type<{ selectedLang: string }>(),
+      methods: type<{ resetPage: () => void }>(),
     },
     withState<TypesFeatureState>({ types: [], selectedTypeId: undefined }),
     withMethods((store, pokeService = inject(PokeService)) => ({
@@ -25,8 +26,8 @@ export function withTypesFeature() {
       setPokemonTypeId: (selectedTypeId: number | undefined) => {
         patchState(store, {
           selectedTypeId: store.selectedTypeId() === selectedTypeId ? undefined : selectedTypeId,
-          page: 1,
-        })
+        });
+        store.resetPage();
       },
     })),
     withHooks({

@@ -2,7 +2,7 @@
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { debounceTime, pipe, switchMap, tap } from 'rxjs';
-import { withLanguageFeature, withTypesFeature } from './features';
+import { withLanguageFeature, withPaginationFeature, withTypesFeature } from './features';
 import { PokemonCollection, PokemonType } from './poke.models';
 import { PokeService, PokemonQuery } from './poke.service';
 import { signalPipe, stripUndefinedValues } from './utils';
@@ -10,16 +10,15 @@ import { computed, inject } from '@angular/core';
 
 type PokeState = {
   collection: PokemonCollection;
-  page: number;
   search: string;
 }
 
 export const PokeStore = signalStore(
   withState<PokeState>({
     collection: { count: 0, items: [] },
-    page: 1,
     search: '',
   }),
+  withPaginationFeature(),
   withLanguageFeature(),
   withTypesFeature(),
   withComputed((store) => ({
@@ -44,10 +43,8 @@ export const PokeStore = signalStore(
       })))
     )),
     setSearch(search: string) {
-      patchState(store, { search, page: 1 });
-    },
-    loadMore() {
-      patchState(store, { page: store.page() + 1 });
+      patchState(store, { search });
+      store.resetPage();
     },
   })),
   withHooks({
