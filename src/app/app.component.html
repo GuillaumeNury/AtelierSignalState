@@ -13,15 +13,15 @@
       <div class="collapsible-body">
         <ul class="inline">
           @for(lang of languages$ | async; track lang) {
-            <li>
-              <button
-                class="btn-small"
-                [class.btn-primary]="lang === selectedLang"
-                (click)="selectedLang = lang"
-              >
-                {{ lang }}
-              </button>
-            </li>
+          <li>
+            <button
+              class="btn-small"
+              [class.btn-primary]="lang === selectedLang"
+              (click)="selectedLang = lang"
+            >
+              {{ lang }}
+            </button>
+          </li>
           }
         </ul>
       </div>
@@ -40,15 +40,15 @@
 
     <ul class="type-list">
       @for(type of pokemonTypes$ | async; track type) {
-        <li>
-          <button
-            class="btn-small"
-            [class.btn-primary]="type.id === selectedType?.id"
-            (click)="selectedType = type.id === selectedType?.id ? null : type"
-          >
-            {{ type.name }}
-          </button>
-        </li>
+      <li>
+        <button
+          class="btn-small"
+          [class.btn-primary]="type.id === selectedType?.id"
+          (click)="selectedType = type.id === selectedType?.id ? null : type"
+        >
+          {{ type.name }}
+        </button>
+      </li>
       }
     </ul>
 
