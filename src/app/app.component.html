@@ -12,12 +12,12 @@
       </label>
       <div class="collapsible-body">
         <ul class="inline">
-          @for(lang of languages$ | async; track lang) {
+          @for(lang of store.languages(); track lang) {
           <li>
             <button
               class="btn-small"
-              [class.btn-primary]="lang === selectedLang"
-              (click)="selectedLang = lang"
+              [class.btn-primary]="lang === store.selectedLang()"
+              (click)="store.setLang(lang)"
             >
               {{ lang }}
             </button>
@@ -35,16 +35,18 @@
         type="text"
         id="pokeSearch"
         placeholder="Search..."
+        [ngModel]="store.search()"
+        (ngModelChange)="store.setSearch($event)"
       />
     </div>
 
     <ul class="type-list">
-      @for(type of pokemonTypes$ | async; track type) {
+      @for(type of store.types(); track type) {
       <li>
         <button
           class="btn-small"
-          [class.btn-primary]="type.id === selectedType?.id"
-          (click)="selectedType = type.id === selectedType?.id ? null : type"
+          [class.btn-primary]="type.id === store.selectedTypeId()"
+          (click)="store.setTypeId(type.id)"
         >
           {{ type.name }}
         </button>
@@ -52,12 +54,11 @@
       }
     </ul>
 
-    @if(pokemons$ | async; as pokemons) {
     <div>
-      <h2>Pokémons ({{ pokemons.count }})</h2>
+      <h2>Pokémons ({{ store.collection.count() }})</h2>
 
       <ul class="pokemon-list">
-        @for(pokemon of pokemons.items; track pokemon.id) {
+        @for(pokemon of store.collection.items(); track pokemon.id) {
         <li>
           <img [src]="pokemon.image" [alt]="pokemon.name + '\'s picture'" />
           {{ pokemon.name }}
@@ -66,11 +67,10 @@
       </ul>
 
       <div class="load-more">
-        @if(pokemons.items.length !== pokemons.count) {
-        <button>Afficher plus</button>
+        @if(store.collection.items().length !== store.collection.count()) {
+        <button (click)="store.loadMore()">Afficher plus</button>
         }
       </div>
     </div>
-    }
   </main>
 </div>
