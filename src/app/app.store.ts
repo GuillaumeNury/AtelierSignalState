@@ -2,27 +2,24 @@
 import { inject } from '@angular/core';
 import { rxMethod, selectSignal, signalStore, withHooks, withMethods, withSignals, withState } from '@ngrx/signal-store';
 import { debounceTime, pipe, switchMap, tap } from 'rxjs';
-import { setLang, withLanguageFeature } from './features';
-import { PokemonCollection, PokemonType } from './poke.models';
+import { setLang, setPokemonTypeId, withLanguageFeature, withTypesFeature } from './features';
+import { PokemonCollection } from './poke.models';
 import { PokeService, PokemonQuery } from './poke.service';
 import { signalPipe, stripUndefinedValues } from './utils';
 
 type PokeState = {
-  types: PokemonType[];
   collection: PokemonCollection;
   page: number;
-  selectedTypeId: number | undefined;
   search: string;
 }
 
 export const PokeStore = signalStore(
   withLanguageFeature(),
+  withTypesFeature(),
   withState<PokeState>({
-    types: [],
     collection: { count: 0, items: [] },
     page: 1,
     search: '',
-    selectedTypeId: undefined,
   }),
   withSignals((store) => ({
     pokemonQuery: selectSignal(
@@ -33,14 +30,10 @@ export const PokeStore = signalStore(
       (page, typeId, search, lang): PokemonQuery => stripUndefinedValues({ page, typeId, search, lang }),
     ),
   })),
-  withMethods(({ $update, page, selectedTypeId }) => {
+  withMethods(({ $update, page }) => {
     const pokeService = inject(PokeService);
 
     return ({
-      loadTypes: rxMethod<string>(pipe(
-        switchMap(lang => pokeService.getTypes({ lang })),
-        tap(types => $update({ types })),
-      )),
       loadPokemons: rxMethod<PokemonQuery>(pipe(
         switchMap(query => pokeService.getPokemons(query)),
         tap(collection => $update(s => ({
@@ -54,7 +47,7 @@ export const PokeStore = signalStore(
         $update(setLang(selectedLang), { page: 1 });
       },
       setTypeId(typeId: number | undefined) {
-        $update({ selectedTypeId: typeId === selectedTypeId() ? undefined : typeId, page: 1 });
+        $update(setPokemonTypeId(typeId), { page: 1 });
       },
       setSearch(search: string) {
         $update({ search, page: 1 });
@@ -66,7 +59,6 @@ export const PokeStore = signalStore(
   }),
   withHooks({
     onInit(store) {
-      store.loadTypes(store.selectedLang);
       store.loadPokemons(store.pokemonQuery);
     },
   })
