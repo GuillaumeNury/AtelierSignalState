@@ -13,15 +13,15 @@
       <div class="collapsible-body">
         <ul class="inline">
           @for(lang of store.languages(); track lang) {
-          <li>
-            <button
-              class="btn-small"
-              [class.btn-primary]="lang === store.selectedLang()"
-              (click)="store.setLang(lang)"
-            >
-              {{ lang }}
-            </button>
-          </li>
+            <li>
+              <button
+                class="btn-small"
+                [class.btn-primary]="lang === store.selectedLang()"
+                (click)="store.setLang(lang)"
+              >
+                {{ lang }}
+              </button>
+            </li>
           }
         </ul>
       </div>
@@ -42,15 +42,15 @@
 
     <ul class="type-list">
       @for(type of store.types(); track type) {
-      <li>
-        <button
-          class="btn-small"
-          [class.btn-primary]="type.id === store.selectedTypeId()"
-          (click)="store.setPokemonTypeId(type.id)"
-        >
-          {{ type.name }}
-        </button>
-      </li>
+        <li>
+          <button
+            class="btn-small"
+            [class.btn-primary]="type.id === store.selectedTypeId()"
+            (click)="store.setPokemonTypeId(type.id)"
+          >
+            {{ type.name }}
+          </button>
+        </li>
       }
     </ul>
 
@@ -59,16 +59,16 @@
 
       <ul class="pokemon-list">
         @for(pokemon of store.collection.items(); track pokemon.id) {
-        <li>
-          <img [src]="pokemon.image" [alt]="pokemon.name + '\'s picture'" />
-          {{ pokemon.name }}
-        </li>
+          <li>
+            <img [src]="pokemon.image" [alt]="pokemon.name + '\'s picture'" />
+            {{ pokemon.name }}
+          </li>
         }
       </ul>
 
       <div class="load-more">
-        @if(store.collection.items().length !== store.collection.count()) {
-        <button (click)="store.loadMore()">Afficher plus</button>
+        @if(store.hasMoreResults()) {
+          <button (click)="store.loadMore()">Afficher plus</button>
         }
       </div>
     </div>
