@@ -2,6 +2,7 @@
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { debounceTime, pipe, switchMap, tap } from 'rxjs';
+import { withLanguageFeature } from './features';
 import { PokemonCollection, PokemonType } from './poke.models';
 import { PokeService, PokemonQuery } from './poke.service';
 import { signalPipe, stripUndefinedValues } from './utils';
@@ -10,19 +11,16 @@ import { computed, inject } from '@angular/core';
 type PokeState = {
   types: PokemonType[];
   collection: PokemonCollection;
-  languages: string[];
-  selectedLang: string;
   page: number;
   selectedTypeId: number | undefined;
   search: string;
 }
 
 export const PokeStore = signalStore(
+  withLanguageFeature(),
   withState<PokeState>({
     types: [],
     collection: { count: 0, items: [] },
-    languages: [],
-    selectedLang: 'en',
     page: 1,
     search: '',
     selectedTypeId: undefined,
@@ -56,9 +54,6 @@ export const PokeStore = signalStore(
         },
       })))
     )),
-    setLang(selectedLang: string) {
-      patchState(store, { selectedLang, page: 1 });
-    },
     setTypeId(typeId: number | undefined) {
       patchState(store, { selectedTypeId: typeId === store.selectedTypeId() ? undefined : typeId, page: 1 });
     },
@@ -71,7 +66,6 @@ export const PokeStore = signalStore(
   })),
   withHooks({
     onInit(store) {
-      store.loadLanguages();
       store.loadTypes(store.selectedLang);
       store.loadPokemons(store.pokemonQuery);
     },
