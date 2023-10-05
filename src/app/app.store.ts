@@ -2,23 +2,22 @@
 import { inject } from '@angular/core';
 import { rxMethod, selectSignal, signalStore, withHooks, withMethods, withSignals, withState } from '@ngrx/signal-store';
 import { debounceTime, pipe, switchMap, tap } from 'rxjs';
-import { setLang, setPokemonTypeId, withLanguageFeature, withTypesFeature } from './features';
+import { resetPage, setLang, setPokemonTypeId, withLanguageFeature, withPaginationFeature, withTypesFeature } from './features';
 import { PokemonCollection } from './poke.models';
 import { PokeService, PokemonQuery } from './poke.service';
 import { signalPipe, stripUndefinedValues } from './utils';
 
 type PokeState = {
   collection: PokemonCollection;
-  page: number;
   search: string;
 }
 
 export const PokeStore = signalStore(
   withLanguageFeature(),
   withTypesFeature(),
+  withPaginationFeature(),
   withState<PokeState>({
     collection: { count: 0, items: [] },
-    page: 1,
     search: '',
   }),
   withSignals((store) => ({
@@ -44,16 +43,13 @@ export const PokeStore = signalStore(
         }))),
       )),
       setLang(selectedLang: string) {
-        $update(setLang(selectedLang), { page: 1 });
+        $update(setLang(selectedLang), resetPage());
       },
       setTypeId(typeId: number | undefined) {
-        $update(setPokemonTypeId(typeId), { page: 1 });
+        $update(setPokemonTypeId(typeId), resetPage());
       },
       setSearch(search: string) {
-        $update({ search, page: 1 });
-      },
-      loadMore() {
-        $update({ page: page() + 1 });
+        $update({ search }, resetPage());
       },
     });
   }),
