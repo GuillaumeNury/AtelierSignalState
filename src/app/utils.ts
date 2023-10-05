@@ -1,6 +1,6 @@
 import { Signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { OperatorFunction } from 'rxjs';
+import { OperatorFunction, merge } from 'rxjs';
 
 // type Typify<T> = {
 //   [K in keyof T]: T[K] extends object ? Typify<T[K]> : T[K];
@@ -29,4 +29,10 @@ export function stripUndefinedValues<T extends Record<string, any>>(obj: T): Par
   }
 
   return result;
+}
+
+export type MergeSignalsResult<T extends ReadonlyArray<Signal<unknown>>> = T extends ReadonlyArray<Signal<infer R>> ? Signal<R> : never;
+
+export function mergeSignals<T extends ReadonlyArray<Signal<unknown>>>(...signals: T): MergeSignalsResult<T> {
+  return toSignal(merge(...signals.map(s => toObservable(s)))) as MergeSignalsResult<T>;
 }

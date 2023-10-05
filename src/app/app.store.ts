@@ -1,27 +1,25 @@
 
+import { inject } from '@angular/core';
 import { rxMethod, selectSignal, signalStore, withHooks, withMethods, withSignals, withState } from '@ngrx/signal-store';
 import { debounceTime, pipe, switchMap, tap } from 'rxjs';
+import { setLang, withLanguageFeature } from './features';
 import { PokemonCollection, PokemonType } from './poke.models';
 import { PokeService, PokemonQuery } from './poke.service';
 import { signalPipe, stripUndefinedValues } from './utils';
-import { inject } from '@angular/core';
 
 type PokeState = {
   types: PokemonType[];
   collection: PokemonCollection;
-  languages: string[];
-  selectedLang: string;
   page: number;
   selectedTypeId: number | undefined;
   search: string;
 }
 
 export const PokeStore = signalStore(
+  withLanguageFeature(),
   withState<PokeState>({
     types: [],
     collection: { count: 0, items: [] },
-    languages: [],
-    selectedLang: 'en',
     page: 1,
     search: '',
     selectedTypeId: undefined,
@@ -43,10 +41,6 @@ export const PokeStore = signalStore(
         switchMap(lang => pokeService.getTypes({ lang })),
         tap(types => $update({ types })),
       )),
-      loadLanguages: rxMethod<void>(pipe(
-        switchMap(() => pokeService.getLanguages()),
-        tap(languages => $update({ languages })),
-      )),
       loadPokemons: rxMethod<PokemonQuery>(pipe(
         switchMap(query => pokeService.getPokemons(query)),
         tap(collection => $update(s => ({
@@ -57,7 +51,7 @@ export const PokeStore = signalStore(
         }))),
       )),
       setLang(selectedLang: string) {
-        $update({ selectedLang, page: 1 });
+        $update(setLang(selectedLang), { page: 1 });
       },
       setTypeId(typeId: number | undefined) {
         $update({ selectedTypeId: typeId === selectedTypeId() ? undefined : typeId, page: 1 });
@@ -72,7 +66,6 @@ export const PokeStore = signalStore(
   }),
   withHooks({
     onInit(store) {
-      store.loadLanguages();
       store.loadTypes(store.selectedLang);
       store.loadPokemons(store.pokemonQuery);
     },
