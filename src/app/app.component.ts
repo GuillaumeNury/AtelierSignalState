@@ -1,14 +1,12 @@
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { catchError, map, of } from 'rxjs';
-import { PokeService } from './poke.service';
 import { PokemonType } from './poke.models';
+import { PokeService } from './poke.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule],
+  imports: [AsyncPipe],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })

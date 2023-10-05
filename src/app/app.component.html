@@ -12,15 +12,17 @@
       </label>
       <div class="collapsible-body">
         <ul class="inline">
-          <li *ngFor="let lang of languages$ | async">
-            <button
-              class="btn-small"
-              [class.btn-primary]="lang === selectedLang"
-              (click)="selectedLang = lang"
-            >
-              {{ lang }}
-            </button>
-          </li>
+          @for(lang of languages$ | async; track lang) {
+            <li>
+              <button
+                class="btn-small"
+                [class.btn-primary]="lang === selectedLang"
+                (click)="selectedLang = lang"
+              >
+                {{ lang }}
+              </button>
+            </li>
+          }
         </ul>
       </div>
     </div>
@@ -37,32 +39,38 @@
     </div>
 
     <ul class="type-list">
-      <li *ngFor="let type of pokemonTypes$ | async">
-        <button
-          class="btn-small"
-          [class.btn-primary]="type.id === selectedType?.id"
-          (click)="selectedType = type.id === selectedType?.id ? null : type"
-        >
-          {{ type.name }}
-        </button>
-      </li>
+      @for(type of pokemonTypes$ | async; track type) {
+        <li>
+          <button
+            class="btn-small"
+            [class.btn-primary]="type.id === selectedType?.id"
+            (click)="selectedType = type.id === selectedType?.id ? null : type"
+          >
+            {{ type.name }}
+          </button>
+        </li>
+      }
     </ul>
 
-    <div *ngIf="pokemons$ | async as pokemons">
+    @if(pokemons$ | async; as pokemons) {
+    <div>
       <h2>Pokémons ({{ pokemons.count }})</h2>
 
       <ul class="pokemon-list">
-        <li *ngFor="let pokemon of pokemons.items">
+        @for(pokemon of pokemons.items; track pokemon.id) {
+        <li>
           <img [src]="pokemon.image" [alt]="pokemon.name + '\'s picture'" />
           {{ pokemon.name }}
         </li>
+        }
       </ul>
 
       <div class="load-more">
-        <button *ngIf="pokemons.items.length !== pokemons.count">
-          Afficher plus
-        </button>
+        @if(pokemons.items.length !== pokemons.count) {
+        <button>Afficher plus</button>
+        }
       </div>
     </div>
+    }
   </main>
 </div>
