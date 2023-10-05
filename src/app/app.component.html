@@ -46,7 +46,7 @@
         <button
           class="btn-small"
           [class.btn-primary]="type.id === store.selectedTypeId()"
-          (click)="store.setTypeId(type.id)"
+          (click)="store.setPokemonTypeId(type.id)"
         >
           {{ type.name }}
         </button>
