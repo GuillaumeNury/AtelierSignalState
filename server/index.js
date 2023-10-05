@@ -29,12 +29,9 @@ fastify.get('/api/pokemons', async (request, reply) => {
   const search = request.query.search || null;
   const typeId = request.query.typeId || null;
 
-  // if (!langId) return;
-
   const typesByPokemonId = await typesByPokemonIdAsync;
 
-  const allSpecies = (await speciesAsync).filter((s) => s.local_language_id === langId);
-  let filteredSpecies = allSpecies;
+  let filteredSpecies = (await speciesAsync).filter((s) => s.local_language_id === langId);
 
   if (search) {
     filteredSpecies = filteredSpecies.filter((s) => s.name.toLowerCase().includes(search.toLowerCase()));
@@ -45,7 +42,7 @@ fastify.get('/api/pokemons', async (request, reply) => {
   }
 
   return {
-    count: allSpecies.length,
+    count: filteredSpecies.length,
     items: filteredSpecies
       .slice((page - 1) * limit, page * limit)
       .map((s) => ({
