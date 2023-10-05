@@ -67,7 +67,7 @@
       </ul>
 
       <div class="load-more">
-        @if(store.collection.items().length !== store.collection.count()) {
+        @if(store.hasMoreResults()) {
         <button (click)="store.loadMore()">Afficher plus</button>
         }
       </div>
