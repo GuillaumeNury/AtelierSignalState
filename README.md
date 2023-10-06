@@ -7,6 +7,8 @@ This playground gives you a simple page with some available APIs. Models and htt
 
 An implementation example can be found [here](https://github.com/GuillaumeNury/AtelierSignalState/tree/signal-store).
 
+![Screenshot of the application](./docs/screenshot.png)
+
 ## Install
 
 > npm ci
