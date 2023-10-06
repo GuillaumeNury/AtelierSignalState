@@ -25,8 +25,8 @@
       "dom"
     ],
     "paths": {
-      "@ngrx/signal-state": [
-        "./src/lib/signal-state"
+      "@ngrx/signal-store": [
+        "./src/lib/signal-store"
       ]
     }
   },
