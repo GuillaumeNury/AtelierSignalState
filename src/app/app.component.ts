@@ -11,8 +11,6 @@ import { PokeService } from './poke.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'atelier-signal-state';
-
   #pokeService = inject(PokeService);
 
   pokemonTypes$ = this.#pokeService.getTypes();
