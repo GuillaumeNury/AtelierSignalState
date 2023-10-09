@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { PokemonCollection, PokemonType } from "./poke.models";
 
-export interface PokemonQuery {
+export type PokemonQuery = {
   limit?: number;
   page?: number;
   typeId?: number;
@@ -10,7 +10,7 @@ export interface PokemonQuery {
   search?: string;
 }
 
-export interface PokemonTypeQuery {
+export type PokemonTypeQuery = {
   lang?: string;
 }
 
@@ -20,9 +20,9 @@ export interface PokemonTypeQuery {
 export class PokeService {
   #httpClient = inject(HttpClient);
 
-  getTypes = (query: PokemonTypeQuery = {}) => this.#httpClient.get<PokemonType[]>('/api/types', { params: { ...query } });
+  getTypes = (query: PokemonTypeQuery = {}) => this.#httpClient.get<PokemonType[]>('/api/types', { params: query });
 
-  getPokemons = (query: PokemonQuery = {}) => this.#httpClient.get<PokemonCollection>('/api/pokemons', { params: { ...query } });
+  getPokemons = (query: PokemonQuery = {}) => this.#httpClient.get<PokemonCollection>('/api/pokemons', { params: query });
 
   getLanguages = () => this.#httpClient.get<string[]>('/api/languages');
 }
