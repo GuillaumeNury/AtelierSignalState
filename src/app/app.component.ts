@@ -1,21 +1,14 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { PokemonType } from './poke.models';
-import { PokeService } from './poke.service';
+import { FormsModule } from '@angular/forms';
+import { PokeStore } from './app.store';
 
 @Component({
-    selector: 'app-root',
-    imports: [AsyncPipe],
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss']
+  selector: 'app-root',
+  imports: [FormsModule],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  providers: [PokeStore],
 })
 export class AppComponent {
-  #pokeService = inject(PokeService);
-
-  pokemonTypes$ = this.#pokeService.getTypes();
-  pokemons$ = this.#pokeService.getPokemons();
-  languages$ = this.#pokeService.getLanguages();
-
-  selectedLang: string = 'en';
-  selectedType: PokemonType | null = null;
+  store = inject(PokeStore);
 }
