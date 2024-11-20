@@ -27,9 +27,11 @@
     "@angular/build": "^19.0.0",
     "@angular/cli": "^19.0.0",
     "@angular/compiler-cli": "^19.0.0",
-    "@types/jasmine": "~4.3.0",
-    "fastify": "^4.23.2",
+    "fastify": "^5.1.0",
     "neat-csv": "^7.0.0",
     "typescript": "~5.6.3"
+  },
+  "volta": {
+    "node": "22.11.0"
   }
 }
