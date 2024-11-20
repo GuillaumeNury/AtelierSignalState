@@ -16,8 +16,8 @@
           <li>
             <button
               class="btn-small"
-              [class.btn-primary]="lang === selectedLang"
-              (click)="selectedLang = lang"
+              [class.btn-primary]="lang === store.selectedLang()"
+              (click)="store.setLang(lang)"
             >
               {{ lang }}
             </button>
@@ -52,7 +52,7 @@
       }
     </ul>
 
-    @if(pokemons$ | async; as pokemons) {
+    @if(store.collection(); as pokemons) {
     <div>
       <h2>Pokémons ({{ pokemons.count }})</h2>
 
