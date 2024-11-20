@@ -4,11 +4,10 @@ import { PokemonType } from './poke.models';
 import { PokeService } from './poke.service';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [AsyncPipe],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    imports: [AsyncPipe],
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   #pokeService = inject(PokeService);
