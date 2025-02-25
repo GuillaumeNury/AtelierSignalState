@@ -41,6 +41,8 @@ fastify.get('/api/pokemons', async (request, reply) => {
     filteredSpecies = filteredSpecies.filter((s) => typesByPokemonId.get(s.pokemon_species_id).has(typeId));
   }
 
+  await new Promise(resolve => setTimeout(resolve, Math.random() * 2000));
+
   return {
     count: filteredSpecies.length,
     items: filteredSpecies

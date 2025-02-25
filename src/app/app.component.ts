@@ -2,7 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { filter, pipe, switchMap, tap } from 'rxjs';
+import { combineLatest, EMPTY, pipe, switchMap, tap } from 'rxjs';
 import { Pokemon, PokemonType } from './poke.models';
 import { PokemonQuery, PokeService } from './poke.service';
 
@@ -44,42 +44,63 @@ const PokemonStore = signalStore(
       return query;
     })
   })),
-  withMethods((store, service = inject(PokeService)) => ({
-    _loadLangs: rxMethod<void>(
-      pipe(
-        switchMap(() => service.getLanguages()),
-        tap(langs => patchState(store, { langs, selectedLang: langs[0] })),
-      )
-    ),
-    _loadTypes: rxMethod<string | null>(
-      pipe(
-        filter(lang => lang !== null),
-        switchMap(lang => service.getTypes({ lang })),
+  withMethods((store, service = inject(PokeService)) => {
+    const loadTypes = (lang: string) => {
+      return service.getTypes({ lang }).pipe(
         tap(types => patchState(store, { types })),
-      )
-    ),
-    _loadPokemons: rxMethod<PokemonQuery | null>(
-      pipe(
-        filter(query => query !== null),
-        switchMap(query => service.getPokemons(query)),
-        tap(collection => patchState(store, { pokemons: collection.items, pokemonCount: collection.count })),
-      )
-    ),
-    setLang(selectedLang: string) {
+      );
+    };
+
+    const _loadPokemons = (query: PokemonQuery | null) => {
+      if (!query) {
+        return EMPTY;
+      }
+
+      return service.getPokemons(query).pipe(
+        tap(collection => patchState(store, { pokemons: collection.items, pokemonCount: collection.count }))
+      );
+    };
+
+    function _setLang(selectedLang: string) {
       patchState(store, { selectedLang });
-    },
-    setSearch(search: string) {
-      patchState(store, { search });
-    },
-    toggleType(type: PokemonType) {
-      patchState(store, { selectedType: type === store.selectedType() ? null : type });
+
+      return combineLatest([
+        loadTypes(selectedLang),
+        _loadPokemons(store._pokemonQuery())
+      ]);
     }
-  })),
+
+    return ({
+      setLang: rxMethod<string>(
+        pipe(switchMap(_setLang))
+      ),
+      _loadLangs: rxMethod<void>(
+        pipe(
+          switchMap(() => service.getLanguages()),
+          tap(langs => patchState(store, { langs })),
+          switchMap(langs => _setLang(langs[0]))
+        )
+      ),
+      _loadPokemons: rxMethod<PokemonQuery | null>(
+        pipe(switchMap(query => _loadPokemons(query))),
+      ),
+      setSearch: rxMethod<string>(
+        pipe(
+          tap(search => patchState(store, { search })),
+          tap(() => _loadPokemons(store._pokemonQuery())),
+        )
+      ),
+      toggleType: rxMethod<PokemonType | null>(
+        pipe(
+          tap((type) => patchState(store, { selectedType: type === store.selectedType() ? null : type })),
+          switchMap(() => _loadPokemons(store._pokemonQuery())),
+        )
+      ),
+    });
+  }),
   withHooks((store) => ({
     onInit() {
       store._loadLangs();
-      store._loadTypes(store.selectedLang);
-      store._loadPokemons(store._pokemonQuery);
     }
   })),
 );
