@@ -4,12 +4,11 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { filter, pipe, switchMap, tap } from 'rxjs';
 import { Pokemon, PokemonType } from './poke.models';
 import { PokemonQuery, PokeService } from './poke.service';
+import { withLangSupport } from './feature/with-lang.feature';
 
 type PokemonState = {
   types: PokemonType[];
   selectedType: PokemonType | null;
-  langs: string[];
-  selectedLang: string | null;
   pokemons: Pokemon[];
   pokemonCount:number;
   search: string;
@@ -19,12 +18,11 @@ export const PokemonStore = signalStore(
   withState<PokemonState>({
     types: [],
     selectedType: null,
-    langs: [],
-    selectedLang: null,
     pokemons: [],
     pokemonCount: 0,
     search: '',
   }),
+  withLangSupport(),
   withComputed(store => ({
     canShowMore: computed(() => store.pokemons().length !== store.pokemonCount()),
     _pokemonQuery: computed((): PokemonQuery | null => {
@@ -44,12 +42,6 @@ export const PokemonStore = signalStore(
     })
   })),
   withMethods((store, service = inject(PokeService)) => ({
-    _loadLangs: rxMethod<void>(
-      pipe(
-        switchMap(() => service.getLanguages()),
-        tap(langs => patchState(store, { langs, selectedLang: langs[0] })),
-      )
-    ),
     _loadTypes: rxMethod<string | null>(
       pipe(
         filter(lang => lang !== null),
@@ -64,9 +56,6 @@ export const PokemonStore = signalStore(
         tap(collection => patchState(store, { pokemons: collection.items, pokemonCount: collection.count })),
       )
     ),
-    setLang(selectedLang: string) {
-      patchState(store, { selectedLang });
-    },
     setSearch(search: string) {
       patchState(store, { search });
     },
@@ -76,7 +65,6 @@ export const PokemonStore = signalStore(
   })),
   withHooks((store) => ({
     onInit() {
-      store._loadLangs();
       store._loadTypes(store.selectedLang);
       store._loadPokemons(store._pokemonQuery);
     }
