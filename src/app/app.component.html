@@ -12,12 +12,12 @@
       </label>
       <div class="collapsible-body">
         <ul class="inline">
-          @for(lang of languages$ | async; track lang) {
+          @for(lang of store.langs(); track lang) {
           <li>
             <button
               class="btn-small"
-              [class.btn-primary]="lang === selectedLang"
-              (click)="selectedLang = lang"
+              [class.btn-primary]="lang === store.selectedLang()"
+              (click)="store.setLang(lang)"
             >
               {{ lang }}
             </button>
@@ -32,6 +32,8 @@
     <div class="form-group">
       <input
         class="input-block"
+        [ngModel]="store.search()"
+        (ngModelChange)="store.setSearch($event)"
         type="text"
         id="pokeSearch"
         placeholder="Search..."
@@ -39,12 +41,12 @@
     </div>
 
     <ul class="type-list">
-      @for(type of pokemonTypes$ | async; track type) {
+      @for(type of store.types(); track type) {
       <li>
         <button
           class="btn-small"
-          [class.btn-primary]="type.id === selectedType?.id"
-          (click)="selectedType = type.id === selectedType?.id ? null : type"
+          [class.btn-primary]="type.id === store.selectedType()?.id"
+          (click)="store.toggleType(type)"
         >
           {{ type.name }}
         </button>
@@ -52,25 +54,21 @@
       }
     </ul>
 
-    @if(pokemons$ | async; as pokemons) {
-    <div>
-      <h2>Pokémons ({{ pokemons.count }})</h2>
+    <h2>Pokémons ({{ store.pokemonCount() }})</h2>
 
-      <ul class="pokemon-list">
-        @for(pokemon of pokemons.items; track pokemon.id) {
-        <li>
-          <img [src]="pokemon.image" [alt]="pokemon.name + '\'s picture'" />
-          {{ pokemon.name }}
-        </li>
-        }
-      </ul>
+    <ul class="pokemon-list">
+      @for(pokemon of store.pokemons(); track pokemon.id) {
+      <li>
+        <img [src]="pokemon.image" [alt]="pokemon.name + '\'s picture'" />
+        {{ pokemon.name }}
+      </li>
+      }
+    </ul>
 
-      <div class="load-more">
-        @if(pokemons.items.length !== pokemons.count) {
-        <button>Afficher plus</button>
-        }
-      </div>
+    <div class="load-more">
+      @if(store.canShowMore()) {
+      <button>Afficher plus</button>
+      }
     </div>
-    }
   </main>
 </div>

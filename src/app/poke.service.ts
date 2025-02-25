@@ -11,7 +11,7 @@ export interface PokemonQuery {
 }
 
 export interface PokemonTypeQuery {
-  lang?: string;
+  lang: string;
 }
 
 @Injectable({
@@ -20,7 +20,7 @@ export interface PokemonTypeQuery {
 export class PokeService {
   #httpClient = inject(HttpClient);
 
-  getTypes = (query: PokemonTypeQuery = {}) => this.#httpClient.get<PokemonType[]>('/api/types', { params: { ...query } });
+  getTypes = (query: PokemonTypeQuery) => this.#httpClient.get<PokemonType[]>('/api/types', { params: { ...query } });
 
   getPokemons = (query: PokemonQuery = {}) => this.#httpClient.get<PokemonCollection>('/api/pokemons', { params: { ...query } });
 
